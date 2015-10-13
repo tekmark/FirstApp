@@ -1,0 +1,148 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:background="#000000"
+    tools:context="com.codenotepad.chao.firstapp.DisplayClockActivity">
+    <!--
+    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout android:id="@+id/fullscreen_content_notification" style="?metaButtonBarStyle"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_gravity="top|center_horizontal"
+            android:background="@color/black_overlay" android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <TextView android:id="@+id/notification" style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="@string/notification" />
+
+        </LinearLayout>
+    </FrameLayout>
+    -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <!--this part of layout is for media player control-->
+        <LinearLayout
+            android:id="@+id/bar_media_control"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true">
+            <ImageView
+                android:id="@+id/media_control_skip_to_start"
+                android:src="@drawable/skip_to_start_filled_32"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+            <ImageView
+                android:id="@+id/media_control_pause"
+                android:src="@drawable/play_filled_32"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:onClick="play"/>
+            <ImageView
+                android:id="@+id/media_control_end"
+                android:src="@drawable/end_filled_32"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/current_weather_info"
+            android:text="Single-line text view that scrolls automatically if the text is too long to fit in the widget"
+            android:textSize="30sp"
+            android:textColor="@color/lime_green"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:marqueeRepeatLimit ="marquee_forever"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:scrollHorizontally="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/bar_media_control"/>
+        <TextClock
+            android:id="@+id/date"
+            android:textColor="@color/lime_green"
+            android:layout_gravity="top"
+            android:gravity="center"
+            android:format12Hour="yyyy LLL dd EEE"
+            android:textSize="30dp"
+            android:layout_below="@id/current_weather_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:text="Edison, NJ"
+            android:textColor="@color/lime_green"
+            android:layout_toRightOf="@id/date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+                android:id="@+id/label_am_pm"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/date"
+                android:layout_alignParentBottom="false"
+                android:orientation="horizontal"
+                android:weightSum="1">
+            <RelativeLayout
+                android:layout_height="match_parent"
+                android:gravity="right"
+                android:layout_weight="0.1"
+                android:layout_width="0dp">
+                <TextView
+                    android:id="@+id/label_am"
+                    android:text="AM"
+                    android:textColor="@color/lime_green"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"/>
+                <TextView
+                    android:id="@+id/label_pm"
+                    android:text="PM"
+                    android:textColor="@color/lime_green"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/label_am"
+                    android:layout_alignParentRight="true"/>
+                <TextView
+                    android:id="@+id/label_alarm"
+                    android:text="ALARM"
+                    android:maxLines="1"
+                    android:textColor="@color/lime_green"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"/>
+            </RelativeLayout>
+            <TextClock
+                android:id="@+id/fullscreen_clock"
+                android:textColor="@color/lime_green"
+                android:typeface="normal"
+                android:format12Hour="hh:mm"
+                android:maxLines="1"
+                android:textSize="100sp"
+                android:gravity="center_horizontal"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.9"/>
+        </LinearLayout>
+    </RelativeLayout>
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout android:id="@+id/fullscreen_content_controls" style="?metaButtonBarStyle"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black_overlay" android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <Button android:id="@+id/dummy_button" style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_weight="1" android:text="@string/dummy_button" />
+
+        </LinearLayout>
+    </FrameLayout>
+
+</FrameLayout>

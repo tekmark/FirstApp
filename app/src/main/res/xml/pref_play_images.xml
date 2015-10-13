@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:key="switch_shuffle"
+        android:title="@string/pref_title_shuffle"
+        android:summary="@string/pref_description_shuffle"
+        android:defaultValue="false" />
+
+    <SwitchPreference
+        android:key="switch_light_sensor"
+        android:title="@string/pref_title_light_sensor"
+        android:summary="@string/pref_description_light_sensor"
+        android:defaultValue="false"/>
+
+    <ListPreference
+        android:key="list_change_freq"
+        android:title="@string/pref_title_change_freq"
+        android:entries="@array/pref_change_freq_titles"
+        android:entryValues="@array/pref_change_freq_values"
+        android:defaultValue="-1"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"/>
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+    <com.codenotepad.chao.firstapp.view.TimePreference
+        android:key="picker_time"
+        android:title="@string/pref_title_pick_sleeping_time"
+        android:timePickerMode="spinner"
+        android:defaultValue="00:00"/>
+
+    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+         dismiss it. -->
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+    <ListPreference
+        android:key="list"
+        android:title="@string/pref_title_add_friends_to_messages"
+        android:defaultValue="-1"
+        android:entries="@array/pref_example_list_titles"
+        android:entryValues="@array/pref_example_list_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+</PreferenceScreen>
