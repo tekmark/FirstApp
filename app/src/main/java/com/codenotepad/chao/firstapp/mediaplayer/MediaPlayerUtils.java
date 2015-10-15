@@ -28,10 +28,9 @@ public class MediaPlayerUtils {
         finalTime = finalTime + min + ":" + secondField;
         return finalTime;
     }
-    static public int getProgressPercentage (long currDuration, long totalDuration) {
-        return 0;
-    }
-    static public long getCurrDuration(int progress, long totalDuration) {
-        return 0;
+
+
+    public String javadoc() {
+        return super.toString();
     }
 }

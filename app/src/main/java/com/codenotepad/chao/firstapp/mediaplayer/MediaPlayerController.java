@@ -15,13 +15,16 @@ import com.codenotepad.chao.firstapp.R;
 
 import java.io.IOException;
 
+
 /**
  * Created by chao on 10/12/15.
  */
 public class MediaPlayerController {
 
     final int PLAY_PREVIOUS_THRESHOLD_SEC = 10;
-    final int PROGRESS_BAR_UPDATE_PERIOD_MSEC = 500;
+    final int DEFAULT_PROGRESS_BAR_REFRESH_PERIOD_MSEC = 200;
+    final int DEFAULT_PROGRESS_BAR_REFRESH_TIMES = 500;
+
 
     private MediaPlayer mMediaPlayer;
     private ImageButton mPlayPause;
@@ -39,9 +42,9 @@ public class MediaPlayerController {
     //private int currSongIndex;
     //private int defaultSongIndex;
 
-    private boolean shuffle = false;
-    private boolean repeat = false;
-    private boolean repeatAll = false;
+    private boolean isShuffle = false;
+    private boolean isRepeat = false;
+    private boolean isRepeatAll = false;
 
     private Handler mHandler = new Handler();
 
@@ -58,7 +61,6 @@ public class MediaPlayerController {
         currPlaylist = new Playlist("default playlist");
 
         loadCurrPlaylist();
-        currPlaylist.setRepeat();
 
         prepareNextSong();
     }
@@ -101,12 +103,16 @@ public class MediaPlayerController {
         mEnd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMediaPlayer.reset();
+                reset();
                 if (prepareNextSong()) {
                     Log.d("MediaPlayer", "move to next song in Playlist");
-                    if (mPlayPause.isSelected()) {
+                    if (mPlayPause.isSelected()) {      //if playing;
                         play();
+                    } else {        //if paused;
+
                     }
+                } else {
+                    resetPlaylist();
                 }
             }
         });
@@ -137,22 +143,19 @@ public class MediaPlayerController {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 Log.d("MediaPlayer", "OnCompleteListener is called");
-                mMediaPlayer.reset();
+                reset();
                 if (prepareNextSong()) {
                     play();
                 } else {
-                    //Change pause icon to ready_to_play;
-                    if (mPlayPause.isSelected()) {
-                        Log.d("MediaPlayer", "set to ready to play state");
-                        mPlayPause.setSelected(false);
-                    }
+                    resetPlaylist();
                 }
             }
         });
         mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
-                Log.e("MediaPlayer", "onError() is called");
+                Log.e("MediaPlayer", "onError() is called, ERROR TYPE is " + what +
+                        " ERROR CODE is " + extra);
                 return false;
             }
         });
@@ -170,16 +173,25 @@ public class MediaPlayerController {
             }
         });
 
-
+        //TODO: add repeat current one;
         mRepeat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mRepeat.isSelected()) {  //playing,
+                if (mRepeat.isSelected() && isRepeatAll && currPlaylist.isRepeat()) {
                     mRepeat.setSelected(false);
-
-                } else {
+                    isRepeatAll = false;
+                    currPlaylist.resetRepeat();
+                    Log.d("MediaPlayer", "disable repeat playlist when finished");
+                } else if (!mRepeat.isSelected() && !isRepeatAll && !currPlaylist.isRepeat()){
                     mRepeat.setSelected(true);
-
+                    isRepeatAll = true;
+                    currPlaylist.setRepeat();
+                    Log.d("MediaPlayer", "enable repeat playlist when finished");
+                } else {
+                    Log.e("MediaPlayer", "Repeat statues conflicts, reset to false");
+                    mRepeat.setSelected(false);
+                    isRepeatAll = false;
+                    currPlaylist.resetRepeat();
                 }
             }
         });
@@ -199,25 +211,31 @@ public class MediaPlayerController {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 mHandler.removeCallbacks(mUpdateTimeTask);
                 long totalDuration = mMediaPlayer.getDuration();
-                int currPosition = (int) (seekBar.getProgress() * totalDuration / 100);
+                //int currPosition = (int) (seekBar.getProgress() * totalDuration / 100);
 
-                mMediaPlayer.seekTo(currPosition);
-                updateProgressBar();
+                mMediaPlayer.seekTo(seekBar.getProgress());
+                play();
+                refreshProgressBar();
             }
         });
     }
 
     public void play() {
         Log.d("MediaPlayer", "play() is called");
-        updateProgressBar();
+        refreshProgressBar();
         mMediaPlayer.start();
     }
 
     public void pause() {
         Log.d("MediaPlayer", "pause() is called");
+        mHandler.removeCallbacks(mUpdateTimeTask);
         mMediaPlayer.pause();
     }
 
+    public void reset() {
+        mMediaPlayer.reset();
+        mHandler.removeCallbacks(mUpdateTimeTask);
+    }
     public void skipToStart() {
         Log.d("MediaPlayer", "skipToStart() is called");
         mMediaPlayer.seekTo(0);
@@ -227,6 +245,7 @@ public class MediaPlayerController {
 
         return mMediaPlayer.isPlaying();
     }
+
 
     public void playSingleSong(String path) {
         /*if (mMediaPlayer.isPlaying()) {
@@ -254,15 +273,7 @@ public class MediaPlayerController {
         Log.d("MediaPlayer", "prepareNextSong() is called");
         if (currPlaylist.hasNext()) {
             String songPath = currPlaylist.next();
-            try {
-                Log.d("MediaPlayer", "Media file path : " + songPath);
-                mMediaPlayer.setDataSource(songPath);
-                mMediaPlayer.prepare();
-                return true;
-            } catch (IOException e) {
-                Log.e("MediaPlayer", "Cannot find audio file: " + songPath);
-                return false;
-            }
+            return prepare(songPath);
         } else {
             Log.d("MediaPlayer", "Reach the end of playlist");
             return false;
@@ -273,21 +284,47 @@ public class MediaPlayerController {
         Log.d("MediaPlayer", "preparePrevSong() is called");
         if (currPlaylist.hasPrevious()) {
             String songPath = currPlaylist.previous();
-            try {
-                Log.d("MediaPlayer", "Media file path : " + songPath);
-                mMediaPlayer.setDataSource(songPath);
-                mMediaPlayer.prepare();
-                return true;
-            } catch (IOException e) {
-                Log.e("MediaPlayer", "Cannot find audio file: " + songPath);
-                return false;
-            }
+            return prepare(songPath);
         } else {
             Log.d("MediaPlayer", "Reach the end of playlist");
             return false;
         }
     }
+    private boolean prepare(String songPath) {
+        try {
+            Log.d("MediaPlayer", "Media file path : " + songPath);
+            mMediaPlayer.setDataSource(songPath);
+            mMediaPlayer.prepare();
+            mProgressBar.setProgress(0);
+            mProgressBar.setMax(mMediaPlayer.getDuration());
+            long totalDuration = mMediaPlayer.getDuration();
+            long currDuration = mMediaPlayer.getCurrentPosition();
+            mCurrDuration.setText(MediaPlayerUtils.millSecondsToTime(currDuration));
+            mTotalDuration.setText(MediaPlayerUtils.millSecondsToTime(totalDuration));
+            return true;
+        } catch (IOException e) {
+            Log.e("MediaPlayer", "Cannot find audio file: " + songPath);
+            return false;
+        }
+    }
 
+
+    private void resetPlaylist() {
+        Log.d("MediaPlayer", "reset cursor in playlist");
+        currPlaylist.resetCur();
+        if (mPlayPause.isSelected()) {          //if playing state
+            mPlayPause.setSelected(false);
+        }
+        if (prepareNextSong()) {
+            Log.d("MediaPlayer", "move to next song in Playlist");
+        } else {
+            Log.e("MediaPlayer", "cannot find next song after reset");
+        }
+    }
+
+    public void updatePlaylist() {
+
+    }
 
     public void stop() {
         mMediaPlayer.stop();
@@ -301,8 +338,8 @@ public class MediaPlayerController {
 
     }
 
-    public void updateProgressBar() {
-        mHandler.postDelayed(mUpdateTimeTask, PROGRESS_BAR_UPDATE_PERIOD_MSEC);
+    public void refreshProgressBar() {
+        mHandler.postDelayed(mUpdateTimeTask, DEFAULT_PROGRESS_BAR_REFRESH_PERIOD_MSEC);
     }
 
     private Runnable mUpdateTimeTask = new Runnable() {
@@ -310,12 +347,17 @@ public class MediaPlayerController {
         public void run() {
             long totalDuration = mMediaPlayer.getDuration();
             long currDuration = mMediaPlayer.getCurrentPosition();
-            int progress = (int)(currDuration * 100 / totalDuration);
-            Log.d("MediaPlayer", "curr: " + currDuration + " total: " + totalDuration + " progress " + progress + "%");
+
             mCurrDuration.setText(MediaPlayerUtils.millSecondsToTime(currDuration));
             mTotalDuration.setText(MediaPlayerUtils.millSecondsToTime(totalDuration));
-            mProgressBar.setProgress(progress);
-            mHandler.postDelayed(this, PROGRESS_BAR_UPDATE_PERIOD_MSEC);
+
+            mProgressBar.setProgress((int)currDuration);
+
+            //frequency of refreshing progress bar depends on total duration of the audio.
+            //therefore, if audio is extremely long, refreshing rate will be low.
+            int updateFreq = Math.max(DEFAULT_PROGRESS_BAR_REFRESH_PERIOD_MSEC,
+                    (int) totalDuration / DEFAULT_PROGRESS_BAR_REFRESH_TIMES);
+            mHandler.postDelayed(this, updateFreq);
         }
     };
 
