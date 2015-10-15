@@ -23,29 +23,14 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <!--this part of layout is for media player control-->
-        <LinearLayout
+
+        <!--media control bar-->
+        <include
             android:id="@+id/bar_media_control"
+            layout="@layout/mediaplayer_control_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true">
-            <ImageView
-                android:id="@+id/media_control_skip_to_start"
-                android:src="@drawable/skip_to_start_filled_32"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-            <ImageView
-                android:id="@+id/media_control_pause"
-                android:src="@drawable/play_filled_32"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:onClick="play"/>
-            <ImageView
-                android:id="@+id/media_control_end"
-                android:src="@drawable/end_filled_32"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"/>
-        </LinearLayout>
+            android:layout_alignParentRight="true"/>
         <TextView
             android:id="@+id/current_weather_info"
             android:text="Single-line text view that scrolls automatically if the text is too long to fit in the widget"

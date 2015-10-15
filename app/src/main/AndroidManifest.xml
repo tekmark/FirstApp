@@ -6,7 +6,11 @@
         android:name="android.hardware.camera"
         android:required="true" />
 
-    <!--permissions-->
+    <!-- permissions API23 -->
+    <uses-permission-sdk-23 android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission-sdk-23 android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <!-- permissions -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -71,6 +75,16 @@
             android:enabled="true"
             android:exported="true" >
         </receiver>
+
+        <activity
+            android:name=".DisplayPlaylistActivity"
+            android:label="@string/title_activity_display_playlist"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.codenotepad.chao.firstapp.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

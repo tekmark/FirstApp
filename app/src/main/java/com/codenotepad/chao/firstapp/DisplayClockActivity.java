@@ -3,8 +3,15 @@ package com.codenotepad.chao.firstapp;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Typeface;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,8 +23,16 @@ import android.view.MenuItem;
 import android.support.v4.app.NavUtils;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.TextClock;
 
+import com.codenotepad.chao.firstapp.mediaplayer.MediaPlayerController;
+import com.codenotepad.chao.firstapp.mediaplayer.PlayListUtils;
+import com.codenotepad.chao.firstapp.mediaplayer.Playlist;
+import com.codenotepad.chao.firstapp.mediaplayer.SongsManager;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
@@ -52,6 +67,10 @@ public class DisplayClockActivity extends AppCompatActivity {
     private AlarmManager mAlarmManager;
     private static DisplayClockActivity inst;
     private PendingIntent pendingIntent;
+
+
+    private MediaPlayerController mPlayer;
+    private SongsManager mSongsManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +118,50 @@ public class DisplayClockActivity extends AppCompatActivity {
         mAlarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
         //setAlarm();
         //blink();
+
+
+        mPlayer = new MediaPlayerController(this);
+        //playPause();
+
+        String playlistName = "new playlist2";
+        PlayListUtils.writePlaylist(this, playlistName, new ArrayList<String>());
+        long playlistId = PlayListUtils.getPlaylistId(this, playlistName);
+        Log.d("MediaPlayer", "playlist id: " + playlistId);
+
+        mSongsManager = new SongsManager(getApplicationContext());
+        mSongsManager.scan();
+        mSongsManager.scanAllSongsOnDevice();
+
+
+        //PlayListUtils.addToPlaylist(this, (int) playlistId, "38");
+        //PlayListUtils.addToPlaylist(this, (int) playlistId, "72");
+        //PlayListUtils.showPlaylistDialog(this, "38");
+
+
+        String[] proj = {MediaStore.Audio.Playlists.Members.AUDIO_ID,
+                MediaStore.Audio.Playlists.Members.ARTIST,
+                MediaStore.Audio.Playlists.Members.TITLE,
+                MediaStore.Audio.Playlists.Members._ID
+        };
+        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external",playlistId);
+
+        Cursor musicCursor = this.getContentResolver().query(uri, new String[]{"*"}, null, null, null);
+        Log.d("Mediaplayer", "count: " + musicCursor.getCount());
+        int idColIndex = musicCursor.getColumnIndex(MediaStore.Audio.Playlists.Members._ID);
+        int audioIdColIndex = musicCursor.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID);
+        int titleColIndex = musicCursor.getColumnIndex(MediaStore.Audio.Playlists.Members.DATA);
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            //String names[] = musicCursor.getColumnNames();
+            /*for (String s : names) {
+                Log.d("MediaPlayer", s);
+            }*/
+            while (!musicCursor.isLast()) {
+                Log.d("MediaPlayer", "Title: " + musicCursor.getString(titleColIndex));
+                Log.d("MediaPlayer", "_ID: " + musicCursor.getString(idColIndex) + " AUDIO_ID: " + musicCursor.getString(audioIdColIndex));
+                musicCursor.moveToNext();
+            }
+        }
+        musicCursor.close();
     }
 
     private void setAlarm() {
@@ -271,7 +334,19 @@ public class DisplayClockActivity extends AppCompatActivity {
     }
 
 
-    public void play(View view) {
+    /*public void play(View view) {
         Log.d("MediaPlayer", "play");
-    }
+        //FrameLayout control_bar = (FrameLayout)findViewById(R.id.bar_media_control);
+        ImageButton play_pause = (ImageButton)findViewById(R.id.media_control_play_pause);
+        Log.d("mediaPlayer", "pressed: " + play_pause.isPressed() + "enabled: " + play_pause.isEnabled());
+        if (play_pause.isPressed()) {
+            String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath() + "/Taylor Swift - Shake It Off.mp3";
+            //mPlayer.playSingleSong(path);
+            //play_pause.setEnabled(false);
+            Log.d("mediaPlayer", "pressed: " + play_pause.isPressed() + "enabled: " + play_pause.isEnabled());
+        } else {
+            mPlayer.pause();
+        }
+    }*/
+
 }
