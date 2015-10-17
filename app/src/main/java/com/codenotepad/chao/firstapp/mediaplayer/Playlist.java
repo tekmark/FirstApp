@@ -26,7 +26,7 @@ public class Playlist {
     }
 
     public Playlist(Playlist playlist) {
-        songs = playlist.songs;
+        songs = new ArrayList<>(playlist.songs);
         playlistName = playlist.playlistName;
         it = songs.listIterator();
         repeat = false;
@@ -64,12 +64,19 @@ public class Playlist {
         if (it.hasPrevious()) {
             return true;
         } else if (repeat) {
-            //resetCur();
             it = songs.listIterator(songs.size());
             return it.hasPrevious();
         } else {
             return false;
         }
+    }
+
+    //these two functions must be called after hasNext() and hasPrevious() respectively.
+    public int nextIndex() {
+        return it.nextIndex();
+    }
+    public int previousIndex() {
+        return it.previousIndex();
     }
 
     public String next() {
@@ -99,6 +106,10 @@ public class Playlist {
 
     public void sort() {
 
+    }
+
+    public void move(int i) {
+        it = songs.listIterator(i);
     }
 
     public void resetCur() {

@@ -29,8 +29,4 @@ public class MediaPlayerUtils {
         return finalTime;
     }
 
-
-    public String javadoc() {
-        return super.toString();
-    }
 }

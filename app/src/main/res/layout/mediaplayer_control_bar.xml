@@ -39,7 +39,7 @@
         </LinearLayout>
 
         <SeekBar
-            android:id="@+id/media_control_progress_bar"
+            android:id="@+id/music_progress_bar"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:background="@color/black"

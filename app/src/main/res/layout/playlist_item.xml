@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/playlist_item_background">
+    <ImageButton
+        android:id="@+id/playlist_item_button_more"
+        android:contentDescription="More button shows more options"
+        android:src="@drawable/more32"
+        android:backgroundTint="@color/transparent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"/>
+    <RelativeLayout
+        android:id="@+id/playlist_item_info"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/playlist_item_button_more">
+        <TextView
+            android:id="@+id/playlist_item_position"
+            android:text="1"
+            android:textColor="@color/black"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_width="32dp"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/playlist_item_duration"
+            android:text="0:00"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"/>
+        <TextView
+            android:id="@+id/playlist_item_title"
+            android:text="Unknown Music"
+            android:singleLine="true"
+            android:textSize="18dp"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/playlist_item_position"
+            android:layout_toStartOf="@id/playlist_item_duration"/>
+        <TextView
+            android:id="@+id/playlist_item_artist"
+            android:text="Unknown Artist"
+            android:singleLine="true"
+            android:layout_below="@id/playlist_item_title"
+            android:layout_toEndOf="@id/playlist_item_position"
+            android:layout_toStartOf="@id/playlist_item_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <include layout="@layout/playlist_item_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/playlist_item_info" />
+</RelativeLayout>

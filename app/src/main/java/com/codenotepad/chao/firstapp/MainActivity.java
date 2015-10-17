@@ -21,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -94,6 +95,12 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         startActivity(intent);
     }
 
+    public void browsePlaylist(View view) {
+        Intent intent = new Intent(this, DisplayPlaylistActivity.class);
+        startActivity(intent);
+    }
+
+
     public void viewImage(View view) {
         Intent intent = new Intent(this, DisplayImageActivity.class);
         //ImageView image = (ImageView) findViewById(R.id.view_image);
@@ -119,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             startActivity(webIntent);
         }
     }
+
     static final int PICK_CONTACT_REQUEST = 1;
     static final int REQUEST_IMAGE_CAPTURE = 2;
     static final int REQUEST_TAKE_PHOTO = 3;

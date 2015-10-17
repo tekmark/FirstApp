@@ -1,19 +1,12 @@
 package com.codenotepad.chao.firstapp.mediaplayer;
 
 import android.app.Activity;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
-import android.os.Environment;
 import android.os.Handler;
-import android.util.Log;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.codenotepad.chao.firstapp.R;
-
-import java.io.IOException;
 
 
 /**
@@ -26,7 +19,7 @@ public class MediaPlayerController {
     final int DEFAULT_PROGRESS_BAR_REFRESH_TIMES = 500;
 
 
-    private MediaPlayer mMediaPlayer;
+    //private MediaPlayer mMediaPlayer;
     private ImageButton mPlayPause;
     private ImageButton mEnd;
     private ImageButton mSkipToStart;
@@ -37,32 +30,29 @@ public class MediaPlayerController {
     private TextView mCurrDuration;
     private TextView mTotalDuration;
 
-    private Playlist currPlaylist;
+    //private Playlist currPlaylist;
 
     //private int currSongIndex;
     //private int defaultSongIndex;
 
-    private boolean isShuffle = false;
-    private boolean isRepeat = false;
-    private boolean isRepeatAll = false;
+    //private boolean isShuffle = false;
+    //private boolean isRepeat = false;
+    //private boolean isRepeatAll = false;
 
     private Handler mHandler = new Handler();
 
-    private String song1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath() + "/Taylor Swift - Shake It Off.mp3";
-    private String song2 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath() + "/All_By_Myself-Celine_Dion.mp3";
+    //private String song1 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath() + "/Taylor Swift - Shake It Off.mp3";
+    //private String song2 = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getPath() + "/All_By_Myself-Celine_Dion.mp3";
 
     public MediaPlayerController (Activity activity) {
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        //mMediaPlayer = new MediaPlayer();
+        //mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 
         bindLayout(activity);
-        setListeners();
-
-        currPlaylist = new Playlist("default playlist");
-
-        loadCurrPlaylist();
-
-        prepareNextSong();
+        //setListeners();
+        //currPlaylist = new Playlist("default playlist");
+        //loadCurrPlaylist();
+        //prepareNextSong();
     }
 
     public boolean isPlaylistEmpty() {
@@ -76,11 +66,12 @@ public class MediaPlayerController {
         mSkipToStart = (ImageButton) activity.findViewById(R.id.media_control_skip_to_start);
         mShuffle = (ImageButton) activity.findViewById(R.id.media_control_shuffle);
         mRepeat = (ImageButton) activity.findViewById(R.id.media_control_repeat);
-        mProgressBar = (SeekBar) activity.findViewById(R.id.media_control_progress_bar);
+        mProgressBar = (SeekBar) activity.findViewById(R.id.music_progress_bar);
         mCurrDuration = (TextView) activity.findViewById(R.id.label_current_time);
         mTotalDuration = (TextView) activity.findViewById(R.id.label_total_time);
     }
 
+    /*
     private void setListeners() {
 
         mPlayPause.setOnClickListener(new View.OnClickListener() {
@@ -218,8 +209,9 @@ public class MediaPlayerController {
                 refreshProgressBar();
             }
         });
-    }
+    }*/
 
+    /*
     public void play() {
         Log.d("MediaPlayer", "play() is called");
         refreshProgressBar();
@@ -244,7 +236,7 @@ public class MediaPlayerController {
     public boolean isPlaying() {
 
         return mMediaPlayer.isPlaying();
-    }
+    }*/
 
 
     public void playSingleSong(String path) {
@@ -262,7 +254,7 @@ public class MediaPlayerController {
         }*/
     }
 
-
+    /*
     private void loadCurrPlaylist() {
         currPlaylist.addSong(song1);
         currPlaylist.addSong(song2);
@@ -337,7 +329,7 @@ public class MediaPlayerController {
     public void show() {
 
     }
-
+    */
     public void refreshProgressBar() {
         mHandler.postDelayed(mUpdateTimeTask, DEFAULT_PROGRESS_BAR_REFRESH_PERIOD_MSEC);
     }
@@ -345,7 +337,7 @@ public class MediaPlayerController {
     private Runnable mUpdateTimeTask = new Runnable() {
         @Override
         public void run() {
-            long totalDuration = mMediaPlayer.getDuration();
+            /*long totalDuration = mMediaPlayer.getDuration();
             long currDuration = mMediaPlayer.getCurrentPosition();
 
             mCurrDuration.setText(MediaPlayerUtils.millSecondsToTime(currDuration));
@@ -357,7 +349,7 @@ public class MediaPlayerController {
             //therefore, if audio is extremely long, refreshing rate will be low.
             int updateFreq = Math.max(DEFAULT_PROGRESS_BAR_REFRESH_PERIOD_MSEC,
                     (int) totalDuration / DEFAULT_PROGRESS_BAR_REFRESH_TIMES);
-            mHandler.postDelayed(this, updateFreq);
+            mHandler.postDelayed(this, updateFreq);*/
         }
     };
 
