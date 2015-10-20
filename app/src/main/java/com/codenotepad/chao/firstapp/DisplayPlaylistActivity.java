@@ -1,24 +1,18 @@
 package com.codenotepad.chao.firstapp;
 
-import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.database.Cursor;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,19 +23,34 @@ import android.widget.TextView;
 
 import com.codenotepad.chao.firstapp.mediaplayer.MediaPlayerController;
 import com.codenotepad.chao.firstapp.mediaplayer.MediaPlayerUtils;
-import com.codenotepad.chao.firstapp.mediaplayer.PlayListUtils;
-import com.codenotepad.chao.firstapp.mediaplayer.Playlist;
+import com.codenotepad.chao.firstapp.mediaplayer.MusicFile;
 import com.codenotepad.chao.firstapp.mediaplayer.PlaylistItem;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.ListIterator;
 
 
 public class DisplayPlaylistActivity extends AppCompatActivity {
 
+    final static private String LOG_TAG = "DisplayPlaylistActivity";
+    final int DEFAULT_PROGRESS_BAR_REFRESH_PERIOD_MSEC = 200;
+    final int DEFAULT_PROGRESS_BAR_REFRESH_TIMES = 200;
+
+    private Handler mHandler = new Handler();        //handler for refresh progress bar periodically
+
     private int mPlaylistId = 71;
+
+    private MusicService mMusicService;
+    boolean mBound = false;
+
+//    private ProgressBar mProgressBar;
+//    private TextView mCurrDuration;
+//    private TextView mTotalDuration;
+//    private TextView mCurrTitle;
+//    private TextView mCurrArtist;
+
+    private MediaPlayerController mController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,130 +59,74 @@ public class DisplayPlaylistActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-       //MediaPlayerController mPlayer = new MediaPlayerController(this);
+        mController = new MediaPlayerController(this);
+        //mController.enableProgressBar(true);
+        mController.enableSeek(false);
+        //bind layout
         bindLayout();
-        mHandler = new Handler();
+        mItemList = new ArrayList<>();
+        currentOutstandingItemPos = -1;
 
-        Uri uri = MediaStore.Audio.Playlists.Members.getContentUri("external",mPlaylistId);
-
-        String[] proj = {
-                MediaStore.Audio.Playlists.Members.AUDIO_ID,            //0
-                MediaStore.Audio.Playlists.Members.TITLE,               //1
-                MediaStore.Audio.Playlists.Members.ARTIST,              //2
-                MediaStore.Audio.Playlists.Members._ID,                 //3
-                MediaStore.Audio.Playlists.Members.DATA,                //4
-                MediaStore.Audio.Playlists.Members.DURATION,            //5
-                MediaStore.Audio.Playlists.Members.ALBUM                //6
-        };
-
-        Cursor musicCursor = this.getContentResolver().query(uri, proj, null, null, null);
-
-
-        int idColIndex = musicCursor.getColumnIndex(MediaStore.Audio.Playlists.Members._ID);
-        int audioIdColIndex = musicCursor.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID);
-        int titleColIndex = musicCursor.getColumnIndex(MediaStore.Audio.Playlists.Members.TITLE);
-        int artistColIndex = musicCursor.getColumnIndex(MediaStore.Audio.Playlists.Members.ARTIST);
-        int pathColIndex = musicCursor.getColumnIndex(MediaStore.Audio.Playlists.Members.DATA);
-        int durationColIndex = musicCursor.getColumnIndex(MediaStore.Audio.Playlists.Members.DURATION);
-        int albumColIndex = musicCursor.getColumnIndex(MediaStore.Audio.Playlists.Members.ALBUM);
-
-        Log.d("Mediaplayer", "count: " + musicCursor.getCount());
-        String names[] = musicCursor.getColumnNames();
-        for (String s : names) {
-            Log.d("MediaPlayer", s);
-        }
-
-
-        if (musicCursor.moveToFirst()) {
-            int pos = 0;
-            while (!musicCursor.isLast()) {
-                String duration = musicCursor.getString(durationColIndex);
-                String title = musicCursor.getString(titleColIndex);
-                String artist = musicCursor.getString(artistColIndex);
-                String album = musicCursor.getString(albumColIndex);
-                String path = musicCursor.getString(pathColIndex);
-                String id = musicCursor.getString(idColIndex);
-                String audioId = musicCursor.getString(audioIdColIndex);
-                Log.d("MediaPlayer", "Title: " + title);
-                Log.d("MediaPlayer", "Artist: " + artist);
-                Log.d("MediaPlayer", "Album: " + album);
-                Log.d("MediaPlayer", "_ID: " + id + " AUDIO_ID: " + audioId);
-                Log.d("MediaPlayer", "Path: " + path);
-                LinearLayout contentLayout = (LinearLayout)findViewById(R.id.playlist);
-                PlaylistItem item1 = PlaylistItem.create(this);
-                //item1.setMediaPlayer(mPlayer);
-                item1.setArtist(artist);
-                item1.setTitle(title);
-                item1.setDuration(MediaPlayerUtils.millSecondsToTime(Integer.parseInt(duration)));
-                item1.setPosition(pos);
-                item1.songPath = path;
-                playlist.addSong(path);
-                item1.getInfoView().setTag(pos);
-                item1.getInfoView().setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //int postion = item1.getPosition();
-                        //Log.d("PlayListItem", "play " + item1.getTitle() + " path " + item1.songPath);
-                        mMusicService.loadCurrPlaylist(playlist);
-                        int tag = (int)v.getTag();
-                        int clickedPos = tag;
-                        Log.d("PlayListItem", "clicked view tag : " + tag);
-                        //check if clicked item is playing, if true, pause, else play it.
-                        int currentPos = mMusicService.getCurrentPosition();
-
-                        if (clickedPos == currentPos) {
-                            if (mMusicService.isPlaying()) {
-                                TextView titleView = (TextView)v.findViewById(R.id.playlist_item_title);
-                                titleView.setTypeface(null, Typeface.NORMAL);
-                                mMusicService.pause();
-                            } else {
-                                TextView titleView = (TextView)v.findViewById(R.id.playlist_item_title);
-                                titleView.setTypeface(null, Typeface.BOLD_ITALIC);
-                                //resume;
-                                mMusicService.play();
-                                refreshProgressBar();
-                                //mMusicService.setCurrentPosition(clickedPos);
-                            }
-                        } else {
-                            TextView titleView = (TextView)v.findViewById(R.id.playlist_item_title);
-                            titleView.setTypeface(null, Typeface.BOLD_ITALIC);
-                            mMusicService.playPlaylistFrom(clickedPos);
-                        }
-                    }
-                });
-
-                contentLayout.addView(item1.getView());
-                musicCursor.moveToNext();
-                ++pos;
-            }
-        }
-
-        musicCursor.close();
-
-
-        //mMusicService.loadCurrPlaylist();
     }
-
-    Playlist playlist = new Playlist("new playlist");
 
     @Override
     protected void onStart() {
         super.onStart();
         Intent playIntent = new Intent(this, MusicService.class);
+        startService(playIntent);
         bindService(playIntent, mConnection, Context.BIND_AUTO_CREATE);
-        //startService(playIntent);
-        //mMusicService.loadCurrPlaylist(playlist);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //register local receiver, in order to get informed from music service.
+        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                new IntentFilter("my-event"));
+    }
 
+    @Override
+    protected void onPause() {
+        Log.d(LOG_TAG, "onPause() is called");
+        //unregister receiver if on pause.
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        if (mBound) {
+            unbindService(mConnection);
+            mBound = false;
+            Log.d(LOG_TAG, "Service disconnected");
+        }
+        //clear item views;
+        clearItemViews();
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+    //define local service connection for bound service.
     private ServiceConnection mConnection = new ServiceConnection() {
-
         @Override
         public void onServiceConnected(ComponentName className,
                                        IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            //cast the IBinder and get LocalService instance
             MusicService.MusicServiceBinder binder = (MusicService.MusicServiceBinder) service;
             mMusicService = binder.getService();
+//            mMusicService.loadCurrPlaylist(playlist);
+            Log.d(LOG_TAG, "Service connected");
+            mMusicService.loadPlaylist(mPlaylistId);
+
+            //bind controller to service
+            mController.bindToMusicService(mMusicService);
+            //mController.sync();
+
+            //place items on screen;
+            createItemsViews(mMusicService.getMusicFiles());
             mBound = true;
         }
 
@@ -183,17 +136,60 @@ public class DisplayPlaylistActivity extends AppCompatActivity {
         }
     };
 
-    private MusicService mMusicService;
-    boolean mBound = false;
+    //TODO: this can be optimized by dynamically loading/adding/creating items on scroll listener.
+    private void createItemsViews(List<MusicFile> list) {
+        LinearLayout contentLayout = (LinearLayout)findViewById(R.id.playlist);
+        ListIterator<MusicFile> it = list.listIterator();
+        while (it.hasNext()) {
+            int pos = it.nextIndex();
+            MusicFile musicFile = it.next();
+            PlaylistItem item = PlaylistItem.create(this);
+            mItemList.add(item);
+            //item1.setMediaPlayer(mPlayer);
+            item.setArtist(musicFile.getArtist());
+            item.setTitle(musicFile.getTitle());
+            int duration = Integer.parseInt(musicFile.getDuration());
+            item.setDuration(MediaPlayerUtils.millSecondsToTime(duration));
+            item.setPosition(pos);
+            item.getInfoView().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //get clicked item's position in list.
+                    TextView positionView = (TextView) v.findViewById(R.id.playlist_item_position);
+                    int clickedPos = Integer.parseInt(positionView.getText().toString());
+                    //check if clicked item is playing, if true, pause, else play it.
+                    int currentPos = mMusicService.getCurrentPosition();
+                    Log.d("PlayListItem", "clicked pos : " + clickedPos + " current position " + currentPos);
 
-    private ProgressBar mProgressBar;
-    private TextView mCurrDuration;
-    private TextView mTotalDuration;
-    private TextView mCurrTitle;
-    private TextView mCurrArtist;
+                    if (clickedPos == currentPos) {
+                        if (mMusicService.isPlaying()) {
+                            //TODO: remove refreshProgressBar callback if paused
+                            //mHandler.removeCallbacks(mUpdateTimeTask);
+                            mController.stopRefreshProgressBar();
+                            mMusicService.pause();
+                        } else {
+                            mMusicService.play();
+                        }
+                    } else {
+                        mMusicService.playPlaylistFrom(clickedPos);
+                    }
+                }
+            });
+            contentLayout.addView(item.getView());
+        }
+    }
 
+    private void clearItemViews() {
+        mItemList.clear();
+        LinearLayout contentLayout = (LinearLayout)findViewById(R.id.playlist);
+        contentLayout.removeAllViews();
+    }
+
+    /**
+     * @param
+     */
     private void bindLayout() {
-        mProgressBar = (SeekBar)findViewById(R.id.music_progress_bar);
+        /*mProgressBar = (SeekBar)findViewById(R.id.music_progress_bar);
         //disable user control
         mProgressBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -204,13 +200,9 @@ public class DisplayPlaylistActivity extends AppCompatActivity {
         mCurrDuration = (TextView)findViewById(R.id.label_current_time);
         mTotalDuration = (TextView)findViewById(R.id.label_total_time);
         mCurrTitle = (TextView) findViewById(R.id.label_title);
-        mCurrArtist = (TextView) findViewById(R.id.label_artist);
+        mCurrArtist = (TextView) findViewById(R.id.label_artist);*/
     }
-
-    final int DEFAULT_PROGRESS_BAR_REFRESH_PERIOD_MSEC = 200;
-    final int DEFAULT_PROGRESS_BAR_REFRESH_TIMES = 200;
-
-    private Handler mHandler;
+/*
     public void refreshProgressBar() {
         long totalDuration = mMusicService.getDuration();
         mProgressBar.setMax((int)totalDuration);
@@ -221,23 +213,79 @@ public class DisplayPlaylistActivity extends AppCompatActivity {
     private Runnable mUpdateTimeTask = new Runnable() {
         @Override
         public void run() {
-            long totalDuration = mMusicService.getDuration();
-            long currDuration = mMusicService.getCurrentDuration();
+            //long totalDuration = mMusicService.getDuration();
+            if (mMusicService.isPlaying()) {
+                long currDuration = mMusicService.getCurrentDuration();
+                //set current duration
+                mCurrDuration.setText(MediaPlayerUtils.millSecondsToTime(currDuration));
+                //mTotalDuration.setText(MediaPlayerUtils.millSecondsToTime(totalDuration));
+                //update progress in the progress bar.
+                mProgressBar.setProgress((int) currDuration);
+                //frequency of refreshing progress bar depends on total duration of the audio.
+                //therefore, if audio is extremely long, refreshing rate will be low.
+//              int updateFreq = Math.max(DEFAULT_PROGRESS_BAR_REFRESH_PERIOD_MSEC,
+//                    (int) totalDuration / DEFAULT_PROGRESS_BAR_REFRESH_TIMES);
+                int updateFreq = DEFAULT_PROGRESS_BAR_REFRESH_PERIOD_MSEC;
+                mHandler.postDelayed(this, updateFreq);
+            }
+        }
+    };
+*/
+    private List<PlaylistItem> mItemList;
 
-            mCurrDuration.setText(MediaPlayerUtils.millSecondsToTime(currDuration));
-            //mTotalDuration.setText(MediaPlayerUtils.millSecondsToTime(totalDuration));
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //get PLAY_ACTION,  postion,
+            //1. get Title and Artist,
+            //2. set playing song bold_italic, reset finished song typeface.
+            //3. set bottom info bar info.
+            String action = intent.getAction();
+            Log.d("RECEIVER", "get action " + action);
 
-            mProgressBar.setProgress((int)currDuration);
+            // Extract data included in the Intent
+            int message = intent.getIntExtra("message", -1);
+            setItemOutstanding(message);
+            Log.d("receiver", "Got message: " + message);
 
-            //frequency of refreshing progress bar depends on total duration of the audio.
-            //therefore, if audio is extremely long, refreshing rate will be low.
-            int updateFreq = Math.max(DEFAULT_PROGRESS_BAR_REFRESH_PERIOD_MSEC,
-                    (int) totalDuration / DEFAULT_PROGRESS_BAR_REFRESH_TIMES);
-            mHandler.postDelayed(this, updateFreq);
+            //mController.refreshProgressBar();
+            mController.sync();
+            //get CHECK_SOURCE
         }
     };
 
+    private int currentOutstandingItemPos; // = -1 if no outstanding item.
+    private void setItemOutstanding(int pos) {
+        if (pos >= 0 && pos < mItemList.size() && pos != currentOutstandingItemPos) {
+            //reset current outstanding pos;
+            resetItemOutstanding(currentOutstandingItemPos);
+            //make pos outstanding;
+            PlaylistItem item = mItemList.get(pos);
+            TextView titleView = (TextView)item.getInfoView().findViewById(R.id.playlist_item_title);
+            titleView.setTypeface(null, Typeface.BOLD_ITALIC);
+            TextView artistView = (TextView)item.getInfoView().findViewById(R.id.playlist_item_artist);
+            String title = titleView.getText().toString();
+            String artist = artistView.getText().toString();
+//            mCurrTitle.setText(title);
+//            mCurrArtist.setText(artist);
+            //update currentOutstandingItemPos
+            currentOutstandingItemPos = pos;
+        }
+    }
+    private void resetItemOutstanding(int pos) {
+        if (pos >= 0 && pos < mItemList.size()) {
+            PlaylistItem item = mItemList.get(pos);
+            TextView titleView = (TextView) item.getInfoView().findViewById(R.id.playlist_item_title);
+            titleView.setTypeface(null, Typeface.NORMAL);
+        } else {
+            //Log.w();
+        }
+    }
 
-    //private List<PlaylistItem> mPlaylist;
-
+    public void showCurrentPlaying(View v) {
+        Intent intent = new Intent(this, DisplayNowPlaying.class);
+        startActivity(intent);
+        Log.d("MusicPlayer", "show current playing");
+        overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_no_anim);
+    }
 }

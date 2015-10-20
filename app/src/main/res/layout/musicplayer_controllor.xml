@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/label_title"
+        android:text="Unknow Music"
+        android:textColor="@color/black"
+        android:textSize="30dp"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+    <TextView
+        android:id="@+id/label_artist"
+        android:text="Unknow Artist"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_title"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true" />
+    <TextView
+        android:id="@+id/label_current_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_artist"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="@dimen/activity_horizontal_margin"
+        android:text="0:00"
+        android:textStyle="bold"
+        android:textColor="@color/lime_green"/>
+    <TextView
+        android:id="@+id/label_total_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_artist"
+        android:layout_marginEnd="@dimen/activity_horizontal_margin"
+        android:layout_alignParentEnd="true"
+        android:text="0:00"
+        android:textStyle="bold"
+        android:textColor="@color/lime_green"/>
+    <SeekBar
+        android:id="@+id/seek_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/label_total_time"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:layout_below="@id/seek_bar">
+        <ImageButton
+            android:id="@+id/button_skip_to_start"
+            android:src="@drawable/skip_to_start_50"
+            android:background="@color/transparent"
+            android:layout_width="100dp"
+            android:layout_height="75dp" />
+        <ImageButton
+            android:id="@+id/button_play_pause"
+            android:src="@drawable/play_pause_50"
+            android:background="@color/transparent"
+            android:layout_width="100dp"
+            android:layout_height="75dp" />
+        <ImageButton
+            android:id="@+id/button_end"
+            android:src="@drawable/end_50"
+            android:background="@color/transparent"
+            android:layout_width="100dp"
+            android:layout_height="75dp" />
+    </LinearLayout>
+
+</RelativeLayout>

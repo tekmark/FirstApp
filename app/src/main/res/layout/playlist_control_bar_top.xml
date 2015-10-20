@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="40dp">
+    <ImageButton
+        android:id="@+id/playlist_top_bar_button_edit"
+        android:src="@drawable/numbered_list_filled_32"
+        android:background="@color/transparent"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"/>
+    <ImageButton
+        android:id="@+id/playlist_top_bar_button_repeat"
+        android:src="@drawable/repeat_disabled_filled_32"
+        android:background="@color/transparent"
+        android:layout_toStartOf="@id/playlist_top_bar_button_edit"
+        android:layout_centerVertical="true"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content" />
+    <ImageButton
+        android:id="@+id/playlist_top_bar_button_shuffle"
+        android:src="@drawable/shuffle"
+        android:background="@color/transparent"
+        android:layout_toStartOf="@id/playlist_top_bar_button_repeat"
+        android:layout_centerVertical="true"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content" />
+    <RelativeLayout
+        android:id="@+id/playlist_top_bar_button_playall"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@id/playlist_top_bar_button_shuffle"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/playlist_top_bar_icon_round_play"
+            android:src="@drawable/circled_play_26"
+            android:layout_alignParentStart="true"
+            android:layout_width="32dp"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:text="@string/play_all"
+            android:textSize="18dp"
+            android:gravity="center"
+            android:layout_toEndOf="@id/playlist_top_bar_icon_round_play"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </RelativeLayout>
+
+</RelativeLayout>

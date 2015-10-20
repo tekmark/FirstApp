@@ -12,6 +12,12 @@
     <TextView
         android:id="@+id/display_message"
         android:text="Hello, Chao!"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+    <include
+        android:layout_below="@id/display_message"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="-16dp"
+        android:layout_height="wrap_content"
+        layout="@layout/musicplayer_controllor"/>
 </RelativeLayout>

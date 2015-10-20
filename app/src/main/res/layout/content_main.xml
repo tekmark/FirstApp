@@ -67,5 +67,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="browsePlaylist"/>
+    <Button
+        android:text="go to library"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="showLibrary"/>
 
 </LinearLayout>

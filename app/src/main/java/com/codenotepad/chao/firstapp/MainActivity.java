@@ -21,7 +21,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -57,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
     }
 
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -89,14 +89,19 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     public void sendMessage(View view) {
         // Do something in response to button
         Intent intent = new Intent(this, DisplayMessageActivity.class);
-        EditText editText = (EditText) findViewById(R.id.edit_message);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
+//        EditText editText = (EditText) findViewById(R.id.edit_message);
+//        String message = editText.getText().toString();
+//        intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
     }
 
     public void browsePlaylist(View view) {
         Intent intent = new Intent(this, DisplayPlaylistActivity.class);
+        startActivity(intent);
+    }
+
+    public void showLibrary(View view) {
+        Intent intent = new Intent(this, DisplayLibraryActivity.class);
         startActivity(intent);
     }
 

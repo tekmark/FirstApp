@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:layout_height="60dp"
     android:layout_alignParentBottom="true"
-    android:background="@color/transparent">
+    android:background="@color/transparent"
+    android:onClick="showCurrentPlaying">
     <SeekBar
-        android:id="@+id/music_progress_bar"
+        android:id="@+id/seek_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/transparent"
@@ -15,12 +15,12 @@
         android:visibility="visible"
         android:layout_alignParentBottom="true"
         android:max="100"
-        android:progress="25"/>
+        android:progress="0"/>
     <TextView
         android:id="@+id/label_current_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/music_progress_bar"
+        android:layout_above="@id/seek_bar"
         android:layout_alignParentStart="true"
         android:layout_marginStart="20dp"
         android:text="0:00"
@@ -30,24 +30,13 @@
         android:id="@+id/label_total_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/music_progress_bar"
+        android:layout_above="@id/seek_bar"
         android:layout_marginEnd="20dp"
         android:layout_alignParentEnd="true"
         android:gravity="end"
         android:text="0:00"
         android:textStyle="bold"
         android:textColor="@color/lime_green"/>
-    <TextView
-        android:id="@+id/label_title"
-        android:text="Unknow Music"
-        android:textColor="@color/black"
-        android:textSize="10dp"
-        android:gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/label_current_time"
-        android:layout_toStartOf="@id/label_total_time"
-        android:layout_above="@id/music_progress_bar"/>
     <TextView
         android:id="@+id/label_artist"
         android:text="Unknow Artist"
@@ -57,5 +46,16 @@
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/label_current_time"
         android:layout_toStartOf="@id/label_total_time"
-        android:layout_above="@id/label_title"/>
+        android:layout_above="@id/seek_bar"/>
+    <TextView
+        android:id="@+id/label_title"
+        android:text="Unknow Music"
+        android:textColor="@color/black"
+        android:textSize="18dp"
+        android:gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@id/label_artist"/>
 </RelativeLayout>

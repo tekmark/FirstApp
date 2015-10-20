@@ -3,10 +3,8 @@
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/light_gray_header_color">
-    <TextView
-        android:text="Delete"
-        android:textColor="@color/black"
-        android:textSize="20dp"
+    <ImageButton
+        android:src="@drawable/more32"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 </LinearLayout>

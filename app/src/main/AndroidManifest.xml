@@ -70,14 +70,16 @@
                 android:value="com.codenotepad.chao.firstapp.MainActivity" />
         </activity>
 
+        <!--
         <receiver
             android:name=".AlarmReceiver"
             android:enabled="true"
             android:exported="true" >
         </receiver>
-
+        -->
         <activity
             android:name=".DisplayPlaylistActivity"
+            android:exported="true"
             android:label="@string/title_activity_display_playlist"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar" >
@@ -91,14 +93,35 @@
             android:enabled="true"
             android:exported="false" >
         </service>
-
+        <!--
         <receiver android:name=".MusicIntentReceiver"
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
                 <action android:name="android.media.AUDIO_BECOMING_NOISY"/>
+                <action android:name="PLAY_ACTION"/>
             </intent-filter>
         </receiver>
+        -->
+-->
+        <activity
+            android:name=".DisplayNowPlaying"
+            android:label="@string/title_activity_display_now_playing"
+            android:parentActivityName=".DisplayPlaylistActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.codenotepad.chao.firstapp.DisplayPlaylistActivity" />
+        </activity>
+        <activity
+            android:name=".DisplayLibraryActivity"
+            android:label="@string/title_activity_display_library"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.codenotepad.chao.firstapp.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

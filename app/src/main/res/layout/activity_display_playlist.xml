@@ -30,13 +30,7 @@
         android:orientation="vertical"
         android:layout_marginBottom="50dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
-        <TextView
-            android:id="@+id/playlist_top_bar"
-            android:layout_width="match_parent"
-            android:text="Play All"
-            android:textSize="30dp"
-            android:layout_height="wrap_content">
-        </TextView>
+        <include layout="@layout/playlist_control_bar_top"/>
         <include
             android:id="@+id/playlist_all"
             android:layout_width="match_parent"
@@ -47,13 +41,14 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <include layout="@layout/music_info_bar"/>
+        <include
+            android:id="@+id/bottom_info_bar"
+            layout="@layout/playlist_info_bar_bottom" />
     </RelativeLayout>
-
+    <!--
     <android.support.design.widget.FloatingActionButton android:id="@+id/fab"
         android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin" app:layout_anchor="@id/app_bar"
         app:layout_anchorGravity="bottom|end" android:src="@android:drawable/ic_dialog_email" />
-
-
+    -->
 </android.support.design.widget.CoordinatorLayout>

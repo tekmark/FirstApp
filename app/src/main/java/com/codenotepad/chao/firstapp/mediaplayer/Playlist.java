@@ -1,7 +1,6 @@
 package com.codenotepad.chao.firstapp.mediaplayer;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
@@ -13,22 +12,22 @@ public class Playlist {
     final static private String DEFAULT_PLAYLIST_NAME = "New Playlsit";
     public Playlist() {
         playlistName = DEFAULT_PLAYLIST_NAME;
-        songs = new ArrayList<>();
-        it = songs.listIterator();
+        musicFiles = new ArrayList<>();
+        it = musicFiles.listIterator();
         repeat = false;
     }
 
     public Playlist(String name) {
         playlistName = name;
-        songs = new ArrayList<>();
-        it = songs.listIterator();
+        musicFiles = new ArrayList<>();
+        it = musicFiles.listIterator();
         repeat = false;
     }
 
     public Playlist(Playlist playlist) {
-        songs = new ArrayList<>(playlist.songs);
+        musicFiles = new ArrayList<>(playlist.musicFiles);
         playlistName = playlist.playlistName;
-        it = songs.listIterator();
+        it = musicFiles.listIterator();
         repeat = false;
     }
 
@@ -41,12 +40,12 @@ public class Playlist {
 
     //public void checkFile() {}
 
-    public void addSong(String song) {
-        songs.add(song);
+    public void addMusicFile(MusicFile musicFile) {
+        musicFiles.add(musicFile);
     }
 
-    public String getSong(int index) {
-        return songs.get(index);
+    public MusicFile getMusicFile(int index) {
+        return musicFiles.get(index);
     }
 
     public boolean hasNext() {
@@ -64,7 +63,7 @@ public class Playlist {
         if (it.hasPrevious()) {
             return true;
         } else if (repeat) {
-            it = songs.listIterator(songs.size());
+            it = musicFiles.listIterator(musicFiles.size());
             return it.hasPrevious();
         } else {
             return false;
@@ -79,11 +78,11 @@ public class Playlist {
         return it.previousIndex();
     }
 
-    public String next() {
+    public MusicFile next() {
         return it.next();
     }
 
-    public String previous() {
+    public MusicFile previous() {
         return it.previous();
     }
 
@@ -100,7 +99,7 @@ public class Playlist {
     }
 
     public void shuffle() {
-        Collections.shuffle(songs);
+        Collections.shuffle(musicFiles);
         resetCur();
     }
 
@@ -108,17 +107,25 @@ public class Playlist {
 
     }
 
+    public int size() {
+        return musicFiles.size();
+    }
+    public List<MusicFile> getMusicFiles() {
+        return musicFiles;
+    }
+
     public void move(int i) {
-        it = songs.listIterator(i);
+        it = musicFiles.listIterator(i);
     }
 
     public void resetCur() {
-        it = songs.listIterator();
+        it = musicFiles.listIterator();
     }
 
-    private List<String> songs;
+    private List<MusicFile> musicFiles;
     private String playlistName;
-    private ListIterator<String> it;
+    private ListIterator<MusicFile> it;
 
     private boolean repeat;
+
 }

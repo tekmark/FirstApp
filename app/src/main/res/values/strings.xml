@@ -109,4 +109,10 @@
 
     <string name="title_activity_display_playlist">Playlist</string>
 
+    <string name="play_all">Play All</string>
+    <string name="title_activity_display_current_playing">DisplayCurrentPlaying</string>
+    <string name="title_activity_display_now_playing">DisplayNowPlaying</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_display_library">DisplayLibrary</string>
+
 </resources>
